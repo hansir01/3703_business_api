@@ -1,0 +1,43 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/*
+ * discription:获得会员基础信息
+ *
+ * author:王同猛
+ * date:2013-11-21
+ */
+
+class BaseMember extends BLL_Controller
+{
+	/**
+     * 会员基础信息查询
+     *
+	 * @param GET方式传参
+	 * @param string - phone 电话号码
+     * @return json - 会员基础信息或错误信息
+     */
+	public function startInit_get()
+    {
+        $phone = $this->get('phone');
+		if(!empty($phone))
+		{
+			$res = $this->rest_client->post('memberInfo/getList',array('data'=>array('base'=>array('where'=>array('member_phone'=>$phone),'limit'=>1))));
+			if(!empty($res) && empty($res->error) && count($res[0])>0)
+			{
+				$this->response($res[0]);
+			}
+			else if($res->status==2)
+			{
+				$this->response(array('status'=>2,'error'=>'no record'),200);
+			}
+			else
+			{
+				$this->response(array('status'=>0,'error'=>'This phone is not a member'),500);
+			}
+		}
+		else
+		{
+			$this->response(array('status'=>0,'error'=>'parameter phone not found'),500);
+		}
+	}
+
+}
